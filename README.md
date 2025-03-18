@@ -1,4 +1,6 @@
-This repository contains a basic Blazor application integrated with Auth0 authentication and supporting authentication in the context of an Auth0 Organization.
+This repository contains a basic B2B Blazor Web application integrated with Auth0 Organizations.
+
+Read the article [Enable Self-Subscribing Model in Your Blazor B2B SaaS Application](https://auth0.com/blog/enable-self-subscription-in-blazor-b2b-saas-application) to learn more about it.
 
 # Requirements
 
@@ -9,12 +11,12 @@ This repository contains a basic Blazor application integrated with Auth0 authen
 1. Clone the repo with the following command:
 
    ```bash
-   git clone --branch organization-manual --single-branch https://github.com/XXXXXXXXXXXX
+   git clone https://github.com/andychiare/MyBlazorSaaS
    ```
 
-2. Move to the `MyBlazorSaaS` folder.
+2. Move to the `MyBlazorSaaS\MyBlazorSaaS` folder.
 
-3. Add your Auth0 domain and client id to the `appsettings.json` configuration file (see [Register with Auth0](https://auth0.com/docs/get-started/auth0-overview/create-applications/regular-web-apps) for more details).
+3. Add your Auth0 domain and client ID to the `appsettings.json` configuration file (see [Register with Auth0](https://auth0.com/docs/get-started/auth0-overview/create-applications/regular-web-apps) for more details).
 
 4. Make sure you have [enabled Organization support for the application in your Auth0 tenant](https://auth0.com/docs/manage-users/organizations/login-flows-for-organizations#configure-your-application-to-use-organizations).
 

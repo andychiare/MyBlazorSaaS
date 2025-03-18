@@ -16,6 +16,16 @@ builder.Services
       options.Scope = "openid profile email";
     });
 
+builder.Services
+    .AddAuth0WebAppAuthentication("OnboardingScheme", options => {
+      options.Domain = builder.Configuration["Auth0:Domain"];
+      options.ClientId = builder.Configuration["Auth0:ManagementClientId"];
+      options.ClientSecret = builder.Configuration["Auth0:ManagementClientSecret"];
+      options.Scope = "openid profile email";
+      options.CookieAuthenticationScheme = "OnboardingCookieScheme";
+      options.CallbackPath = "/onboarding/callback";
+    });
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
@@ -23,6 +33,14 @@ builder.Services.AddRazorComponents()
     .AddAuthenticationStateSerialization();
 
 builder.Services.AddHttpClient();
+
+builder.Services.AddSingleton<IAuth0Management>(sp => 
+  new Auth0Management(
+    builder.Configuration["Auth0:Domain"],
+    builder.Configuration["Auth0:ManagementClientId"],
+    builder.Configuration["Auth0:ManagementClientSecret"]
+  )
+);
 
 var app = builder.Build();
 
@@ -61,6 +79,20 @@ app.MapGet("/account/logout", async (HttpContext httpContext, string returnUrl =
 
   await httpContext.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
   await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+  await httpContext.SignOutAsync("OnboardingScheme", authenticationProperties);
+  await httpContext.SignOutAsync("OnboardingCookieScheme");
+});
+
+app.MapGet("/account/signup", async (HttpContext httpContext, string login_hint) =>
+{
+  var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
+          .WithRedirectUri("/onboarding/createOrganization")
+          .WithParameter("screen_hint", "signup")
+          .WithParameter("login_hint", login_hint)
+          .Build();
+
+  await httpContext.ChallengeAsync("OnboardingScheme", authenticationProperties);
 });
 
 app.MapGet("/api/internalData", () =>

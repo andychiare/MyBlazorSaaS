@@ -1,5 +1,7 @@
 ﻿@page "/"
 
+@inject IAuth0Management auth0Management
+
 <PageTitle>Home</PageTitle>
 
 <h1>Welcome to MyBlazorSaaS!</h1>
@@ -8,10 +10,41 @@
 MyBlazorSaaS is a reference B2B SaaS application built using Blazor and Auth0.
 </p>
 
+@if (!string.IsNullOrWhiteSpace(OrganizationMessage)) {
+  <div class="alert alert-success" role="alert">
+    @OrganizationMessage
+  </div>
+}
+
 <div class="text-center">
   <div>
     <a href="https://a0.to/dotnet-templates/blazor-webapp"><img src="images/auth0-dotnet-ebook.png" alt=".NET Identity with Auth0"></a>
   </div>
 </div>
+
+@code {
+  [CascadingParameter]
+  private Task<AuthenticationState>? authenticationState { get; set; }
+  private string OrganizationMessage = "";
+
+  protected override async Task OnInitializedAsync()
+  {
+    if (authenticationState is not null)
+    {
+      var state = await authenticationState;
+
+      if (state.User?.Identity?.IsAuthenticated??false)
+      {
+        var organizationId = state.User?.FindFirst(c => c.Type == "org_id")?.Value??String.Empty;
+        if (!string.IsNullOrEmpty(organizationId))
+        {
+          var managementClient = await auth0Management.getClient();
+          var organization = await managementClient.Organizations.GetAsync(organizationId);
+          OrganizationMessage = $"You are authenticated in the Organization '{organization.DisplayName}'";
+        }
+      }
+    }
+  }
+}
 
 

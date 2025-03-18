@@ -1,0 +1,116 @@
+@page "/Onboarding/CreateOrganization"
+@rendermode InteractiveServer
+
+@using System.Security.Claims
+@using Auth0.AuthenticationApi;
+@using Auth0.ManagementApi;
+@using Auth0.AuthenticationApi.Models;
+@using Auth0.ManagementApi.Models
+@using System.Web
+@using Slugify
+@using Microsoft.Extensions.Configuration
+
+@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
+@inject IAuth0Management auth0Management
+
+<h1>Create an account</h1>
+<p>
+Enter your organization name to create an account.
+</p>
+
+<div>
+  <div class="form-group row my-2">
+    <label for="email" class="col-sm-4 col-form-label">Email</label>
+    <div class="col-sm-6">
+      <InputText 
+        type="email"
+        @bind-Value="Email"
+        id="email"
+        class="form-control"
+        disabled/>
+    </div>
+  </div>
+
+  <div class="form-group row my-2">
+    <label for="organization" class="col-sm-4 col-form-label">Organization name</label>
+    <div class="col-sm-6">
+      <InputText 
+        @bind-Value="OrganizationName"
+        placeholder="Acme Corp."
+        id="organization"
+        class="form-control"
+        required/>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" @onclick="StartCreateOrganization">Create Organization</button>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Message)) {
+  <div class="alert alert-danger" role="alert">
+    @Message
+  </div>
+}
+
+@code {
+  [CascadingParameter]
+  private Task<AuthenticationState>? authenticationState { get; set; }
+  private string Email = "";
+  private string UserId = "";
+  private string OrganizationName = "";
+  private string Message = "";
+
+  protected override async Task OnInitializedAsync()
+  {
+    if (authenticationState is not null)
+    {
+      var state = await authenticationState;
+
+      if (state.User?.Identity?.IsAuthenticated??false)
+      {
+        Email = state.User?.FindFirst(c => c.Type == ClaimTypes.Email)?.Value??String.Empty;
+        UserId = state.User?.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value??String.Empty;
+      } else {
+        NavigationManager.NavigateTo("/Onboarding/Signup");
+      }
+    }
+  }
+
+  private async Task StartCreateOrganization()
+  {
+    if (!String.IsNullOrEmpty(OrganizationName))
+    {
+      Organization organization;
+
+      try {
+        //Get management client
+        var managementClient = await auth0Management.getClient();
+
+        //Create organization
+        organization = await managementClient.Organizations.CreateAsync(
+          new OrganizationCreateRequest() { 
+            Name = new SlugHelper().GenerateSlug(OrganizationName),
+            DisplayName = OrganizationName,
+            EnabledConnections = [new OrganizationConnectionCreateRequest() { ConnectionId = Configuration["Auth0:DefaultConnectionId"]}]
+          }
+        );
+
+        //Add member
+        await managementClient.Organizations.AddMembersAsync(
+          organization.Id,
+          new OrganizationAddMembersRequest() {
+            Members = [UserId]
+          }
+        );
+
+        // Redirect to the Organization login
+        NavigationManager.NavigateTo($"/Account/Login?organizationId={organization.Id}");
+      } catch (Exception ex) {
+        Message = "Failed to create an organization.";
+      }
+    } else {
+      Message = "Organization name is required.";
+    }    
+  }
+}
