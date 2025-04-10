@@ -67,7 +67,9 @@ Enter your organization name to create an account.
     {
       var state = await authenticationState;
 
-      if (state.User?.Identity?.IsAuthenticated??false)
+      var isEmailVerified = state.User?.FindFirst(c => c.Type == "email_verified")?.Value?.ToLowerInvariant() == "true";
+
+      if (state.User?.Identity?.IsAuthenticated??false && isEmailVerified)
       {
         Email = state.User?.FindFirst(c => c.Type == ClaimTypes.Email)?.Value??String.Empty;
         UserId = state.User?.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value??String.Empty;

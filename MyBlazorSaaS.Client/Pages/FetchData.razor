@@ -1,5 +1,5 @@
 @page "/fetchdata"
-@attribute [Authorize]
+@attribute [Authorize(Policy = "VerifiedEmail")]
 @rendermode InteractiveAuto
 @inject HttpClient Http
 

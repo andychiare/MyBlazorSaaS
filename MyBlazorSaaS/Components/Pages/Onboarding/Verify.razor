@@ -1,0 +1,45 @@
+@page "/Onboarding/Verify"
+@rendermode InteractiveServer
+@using Auth0.ManagementApi.Models
+@using System.Security.Claims
+
+@inject NavigationManager NavigationManager
+@inject IAuth0Management auth0Management
+
+<h1>Verify your email</h1>
+<p>
+ Please check your inbox for a verification link to continue creating your account.
+</p>
+
+<div>
+  <button class="btn btn-primary" @onclick="ResendVerificationEmail">Resend Verification</button>
+</div>
+
+<div>
+@Message
+</div>
+
+@code {
+  [CascadingParameter]
+  private Task<AuthenticationState>? authenticationState { get; set; }
+  private string Message = "";
+
+  private async Task ResendVerificationEmail()
+  {
+    if (authenticationState is not null)
+    {
+      var state = await authenticationState;
+      var userId = state?.User?.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+      try {
+        var managementClient = await auth0Management.getClient();
+        await managementClient.Jobs.SendVerificationEmailAsync(new VerifyEmailJobRequest() { UserId = userId });
+        Message = "The verification e-mail has successfully been sent. Please check your inbox";
+      } catch (Exception) {
+        Message = "Failed to resend verification e-mail.";
+      }      
+    } else {
+        NavigationManager.NavigateTo("/Onboarding/Signup");
+    }
+  }
+}

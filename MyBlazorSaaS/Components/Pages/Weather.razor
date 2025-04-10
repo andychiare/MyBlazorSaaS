@@ -1,5 +1,5 @@
 ﻿@page "/weather"
-@attribute [Authorize]
+@attribute [Authorize(Policy = "VerifiedEmail")]
 @attribute [StreamRendering]
 
 <PageTitle>Weather</PageTitle>

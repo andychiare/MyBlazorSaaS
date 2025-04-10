@@ -26,6 +26,19 @@ builder.Services
       options.CallbackPath = "/onboarding/callback";
     });
 
+builder.Services
+    .AddAuthorization(options => {
+      options.AddPolicy("VerifiedEmail", policy =>
+        policy.RequireAssertion(context =>
+          context.User.HasClaim(claim =>
+            ( claim.Type == "email_verified" &&
+              claim.Value?.ToLowerInvariant() == "true"
+            )
+          )
+        )
+      );
+    });
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
@@ -87,7 +100,7 @@ app.MapGet("/account/logout", async (HttpContext httpContext, string returnUrl =
 app.MapGet("/account/signup", async (HttpContext httpContext, string login_hint) =>
 {
   var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
-          .WithRedirectUri("/onboarding/createOrganization")
+          .WithRedirectUri("/onboarding/verify")
           .WithParameter("screen_hint", "signup")
           .WithParameter("login_hint", login_hint)
           .Build();
