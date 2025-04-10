@@ -1,6 +1,6 @@
 This repository contains a basic B2B Blazor Web application integrated with Auth0 Organizations.
 
-Read the article [Enable Self-Subscribing Model in Your Blazor B2B SaaS Application](https://auth0.com/blog/enable-self-subscription-in-blazor-b2b-saas-application) to learn more about it.
+Read the article [Enforce Customer Email Verification in Your B2B Blazor Web App](https://auth0.com/blog/enforce-customer-email-verification-b2b-saas-blazor-app) to learn more about it.
 
 # Requirements
 
