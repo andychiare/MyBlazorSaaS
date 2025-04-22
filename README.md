@@ -20,7 +20,7 @@ Read the following articles to learn more about it:
 
 2. Move to the `MyBlazorSaaS\MyBlazorSaaS` folder.
 
-3. [Register the app with Auth0](https://auth0.com/docs/get-started/auth0-overview/create-applications/regular-web-apps) and add your Auth0 domain and client ID to the `appsettings.json` configuration file.
+3. [Register the web app with Auth0](https://auth0.com/docs/get-started/auth0-overview/create-applications/regular-web-apps) and add your Auth0 domain and client ID to the `appsettings.json` configuration file.
 
 4. Make sure you have [enabled Organization support for the application in your Auth0 tenant](https://auth0.com/docs/manage-users/organizations/login-flows-for-organizations#configure-your-application-to-use-organizations).
 
