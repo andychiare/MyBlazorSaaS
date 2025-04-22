@@ -16,7 +16,7 @@ Read the article [Enable Self-Subscribing Model in Your Blazor B2B SaaS Applicat
 
 2. Move to the `MyBlazorSaaS\MyBlazorSaaS` folder.
 
-3. [Register the app with Auth0](https://auth0.com/docs/get-started/auth0-overview/create-applications/regular-web-apps) and add your Auth0 domain and client ID to the `appsettings.json` configuration file.
+3. [Register the web app with Auth0](https://auth0.com/docs/get-started/auth0-overview/create-applications/regular-web-apps) and add your Auth0 domain and client ID to the `appsettings.json` configuration file.
 
 4. Also [register an M2M application](https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps) with access to the Management API and assign its client ID and client secret to the `ManagementClientId` and `ManagementClientSecret` keys in `appsettings.json`.
 
