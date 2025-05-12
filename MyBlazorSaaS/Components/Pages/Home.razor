@@ -16,6 +16,14 @@ MyBlazorSaaS is a reference B2B SaaS application built using Blazor and Auth0.
   </div>
 }
 
+<AuthorizeView Roles="admin">
+    <Authorized>
+      <div class="text-center">
+        <a href="Dashboard">Manage your Organization</a>
+      </div>
+    </Authorized>
+</AuthorizeView>
+
 <div class="text-center">
   <div>
     <a href="https://a0.to/dotnet-templates/blazor-webapp"><img src="images/auth0-dotnet-ebook.png" alt=".NET Identity with Auth0"></a>
