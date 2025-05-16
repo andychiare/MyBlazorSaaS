@@ -2,11 +2,10 @@ This repository contains a basic B2B Blazor Web application integrated with Auth
 
 Read the following articles to learn more about it:
 
-- [Implementing Role-Based Access Control in Your Blazor B2B SaaS Application](https://auth0.com/blog/role-management-auth0-organizations-b2b-saas/)
-
 - [Add Auth0 Organizations to Your B2B Blazor Web App](https://auth0.com/blog/auth0-organizations-for-b2b-saas-blazor-web-apps/)
 - [Enable Self-Subscribing Model in Your Blazor B2B SaaS Application](https://auth0.com/blog/enable-self-subscription-in-blazor-b2b-saas-application)
 - [Enforce Customer Email Verification in Your B2B Blazor Web App](https://auth0.com/blog/enforce-customer-email-verification-b2b-saas-blazor-app) 
+- [Implementing Role-Based Access Control in Your Blazor B2B SaaS Application](https://auth0.com/blog/role-management-auth0-organizations-b2b-saas/)
 
 # Requirements
 
