@@ -1,0 +1,47 @@
+@page "/dashboard"
+@attribute [Authorize(Roles = "admin")]
+
+@inject IAuth0Management auth0Management
+
+<PageTitle>Dashboard</PageTitle>
+
+<h1>Admin dashboard!</h1>
+
+<div>
+  <div class="form-group row my-2">
+    <label for="organizationName" class="col-sm-4 col-form-label">Organization</label>
+    <div class="col-sm-6">
+      <InputText 
+        type="text"
+        @bind-Value="OrganizationName"
+        id="organizationName"
+        class="form-control"
+        disabled/>
+    </div>
+  </div>
+</div>
+
+@code {
+  [CascadingParameter]
+  private Task<AuthenticationState>? authenticationState { get; set; }
+  private string OrganizationName = "";
+
+  protected override async Task OnInitializedAsync()
+  {
+    if (authenticationState is not null)
+    {
+      var state = await authenticationState;
+
+      if (state.User?.Identity?.IsAuthenticated??false)
+      {
+        var organizationId = state.User?.FindFirst(c => c.Type == "org_id")?.Value??String.Empty;
+        if (!string.IsNullOrEmpty(organizationId))
+        {
+          var managementClient = await auth0Management.getClient();
+          var organization = await managementClient.Organizations.GetAsync(organizationId);
+          OrganizationName = organization.DisplayName;
+        }
+      }
+    }
+  }
+}

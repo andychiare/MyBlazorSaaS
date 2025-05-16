@@ -98,11 +98,58 @@ Enter your organization name to create an account.
           }
         );
 
+        //Create admin role if it does not exist
+        Role adminRole;
+        var adminRoleList = await managementClient.Roles.GetAllAsync(
+          new GetRolesRequest {NameFilter = "admin"}
+          );
+
+        if (adminRoleList.Count == 0)
+        {
+          adminRole = await managementClient.Roles.CreateAsync(
+            new RoleCreateRequest
+            {
+              Name = "admin",
+              Description = "Manage the organization's configuration."
+            }
+          );
+        } else {
+          adminRole = adminRoleList[0];
+        }
+
+        //Create member role if it does not exist
+        Role memberRole;
+        var memberRoleList = await managementClient.Roles.GetAllAsync(
+          new GetRolesRequest {NameFilter = "member"}
+          );
+
+        if (memberRoleList.Count == 0)
+        {
+          memberRole = await managementClient.Roles.CreateAsync(
+            new RoleCreateRequest
+            {
+              Name = "member",
+              Description = "Member of an organization."
+            }
+          );
+        } else {
+          memberRole = memberRoleList[0];
+        }
+
         //Add member
         await managementClient.Organizations.AddMembersAsync(
           organization.Id,
           new OrganizationAddMembersRequest() {
             Members = [UserId]
+          }
+        );
+
+        //Assign admin role to the new member
+        await managementClient.Organizations.AddMemberRolesAsync(
+          organization.Id,
+          UserId,
+          new OrganizationAddMemberRolesRequest {
+            Roles = [adminRole.Id]
           }
         );
 
