@@ -6,6 +6,8 @@ Read the following articles to learn more about it:
 - [Enable Self-Subscribing Model in Your Blazor B2B SaaS Application](https://auth0.com/blog/enable-self-subscription-in-blazor-b2b-saas-application)
 - [Enforce Customer Email Verification in Your B2B Blazor Web App](https://auth0.com/blog/enforce-customer-email-verification-b2b-saas-blazor-app) 
 - [Implementing Role-Based Access Control in Your Blazor B2B SaaS Application](https://auth0.com/blog/role-management-auth0-organizations-b2b-saas/)
+- [User Onboarding Strategies in a B2B SaaS Application](https://auth0.com/blog/user-onboarding-strategies-b2b-saas/)
+
 
 
 # Requirements
@@ -27,6 +29,7 @@ Read the following articles to learn more about it:
 4. Make sure you have [enabled Organization support for the application in your Auth0 tenant](https://auth0.com/docs/manage-users/organizations/login-flows-for-organizations#configure-your-application-to-use-organizations).
 
 5. Create an [Auth0 Action](https://auth0.com/docs/customize/actions) that handles the [Post Login trigger](https://auth0.com/docs/customize/actions/explore-triggers/signup-and-login-triggers/login-trigger) with the following code:
+
    ```javascript
    exports.onExecutePostLogin = async (event, api) => { 
      const roleClaim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';

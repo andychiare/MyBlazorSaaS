@@ -1,0 +1,115 @@
+@page "/dashboard/users/invite"
+@attribute [Authorize(Roles = "admin")]
+@rendermode InteractiveServer
+
+@using Auth0.ManagementApi
+@using System.ComponentModel.DataAnnotations
+@using Auth0.ManagementApi.Models
+@using Microsoft.Extensions.Configuration
+
+@inject IAuth0Management auth0Management
+@inject IConfiguration Configuration
+
+<h3>Invite a New User</h3>
+
+<div>
+  <div class="form-group row my-2">
+    <label for="email" class="col-sm-4 col-form-label">EmailAddress</label>
+    <div class="col-sm-6">
+      <InputText 
+        type="email"
+        @bind-Value="EmailAddress"
+        id="email"
+        class="form-control"/>
+    </div>
+  </div>
+
+  <div class="form-group row my-2">
+    <label for="role" class="col-sm-4 col-form-label">Role</label>
+    <div class="col-sm-6">
+      <InputSelect id="role" class="form-select" @bind-Value="RoleId">
+            <option value="">Select a role...</option>
+            @foreach (var role in availableRoles)
+            {
+                <option value="@role.Id">@role.Name</option>
+            }
+      </InputSelect>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" @onclick="HandleInvite">Send Invite</button>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(successMessage)) {
+  <div class="alert alert-success" role="alert">
+    @successMessage
+  </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(errorMessage)) {
+  <div class="alert alert-danger" role="alert">
+    @errorMessage
+  </div>
+}
+
+@code {
+  [CascadingParameter]
+  private Task<AuthenticationState>? authenticationState { get; set; }
+  private ManagementApiClient? managementClient;
+  private string EmailAddress = "";
+  private string RoleId = "";
+  private string OrganizationId = "";
+  private string OrganizationName = "";
+  private string successMessage = "";
+  private string errorMessage = "";
+  private IEnumerable<Role>? availableRoles = [];
+
+
+  protected override async Task OnInitializedAsync()
+  {
+    if (authenticationState is not null)
+    {
+      var state = await authenticationState;
+
+      if (state.User?.Identity?.IsAuthenticated??false)
+      {
+        OrganizationId = state.User?.FindFirst(c => c.Type == "org_id")?.Value??String.Empty;
+        if (!string.IsNullOrEmpty(OrganizationId))
+        {
+          managementClient = await auth0Management.getClient();
+          var organization = await managementClient.Organizations.GetAsync(OrganizationId);
+          OrganizationName = organization.DisplayName;
+
+          availableRoles = await managementClient.Roles.GetAllAsync(new GetRolesRequest());
+        }
+      }
+    }
+  }
+
+    private async Task HandleInvite()
+    {
+        try
+        {
+            var inviterName = $"{OrganizationName} Admin";
+
+            var invitation = new OrganizationCreateInvitationRequest
+            {
+                Inviter = new OrganizationInvitationInviter { Name = inviterName },
+                Invitee = new OrganizationInvitationInvitee { Email = EmailAddress },
+                ClientId = Configuration["Auth0:ClientId"],
+                Roles = new List<string> { RoleId }
+            };
+
+            await managementClient.Organizations.CreateInvitationAsync(OrganizationId, invitation);
+
+            successMessage = $"Invitation sent successfully to {EmailAddress}.";
+
+            EmailAddress = "";
+            RoleId = "";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error sending invitation: {ex.Message}";
+        }
+    }
+}
