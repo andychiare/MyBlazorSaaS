@@ -8,8 +8,6 @@ Read the following articles to learn more about it:
 - [Implementing Role-Based Access Control in Your Blazor B2B SaaS Application](https://auth0.com/blog/role-management-auth0-organizations-b2b-saas/)
 - [User Onboarding Strategies in a B2B SaaS Application](https://auth0.com/blog/user-onboarding-strategies-b2b-saas/)
 
-
-
 # Requirements
 
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) installed on your machine
